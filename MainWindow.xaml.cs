@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,20 +28,25 @@ namespace DataBindingExample
             evento = new EventModel () { 
                 Title = "Reunión de trabajo", 
                 Date = new DateTime(2020, 10, 23) 
-            }; 
-            nombreTextBox.Text = evento.Title; 
-            fechaDatePicker.SelectedDate = evento.Date;
+            };
+            //nombreTextBox.Text = evento.Title; 
+            //fechaDatePicker.SelectedDate = evento.Date;
+
+            DataContext = evento;
         }
-        class EventModel
+        class EventModel : INotifyPropertyChanged
         {
-            private string title; private DateTime date;
+            private string title; 
+            private DateTime date;
             public string Title
             {
-                get => title; set
+                get => title; 
+                set
                 {
                     if (value != title)
                     {
                         title = value;
+                        OnPropertyChanged("Title");
                     }
                 }
             }
@@ -52,17 +58,28 @@ namespace DataBindingExample
                     if (value != date)
                     {
                         date = value;
+                        OnPropertyChanged("Date");
                     }
                 }
             }
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void OnPropertyChanged(string propertyName) 
+            { 
+                if (PropertyChanged != null) 
+                { 
+                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); 
+                } 
+            }
+
+            
         }
 
         private void modificarEventoButton_Click(object sender, RoutedEventArgs e)
         {
             evento.Title = evento.Title.ToLower(); 
             evento.Date = evento.Date.AddDays(1); 
-            nombreTextBox.Text = evento.Title; 
-            fechaDatePicker.SelectedDate = evento.Date; 
+            //nombreTextBox.Text = evento.Title; 
+            //fechaDatePicker.SelectedDate = evento.Date; 
             MessageBox.Show(evento.Title + "\n" + evento.Date);
         }
     }
